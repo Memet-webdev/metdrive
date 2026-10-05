@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>MetDrive</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preload" as="image" href="logo-pin.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= HALAMAN LOGIN PIN ================= -->
+    <div id="pin-screen">
+        <div class="pin-card">
+            <img src="logo-pin.png" alt="Logo MetDrive" class="pin-logo" width="72" height="72">
+
+            <h2>Masukkan PIN</h2>
+
+            <input type="password" id="pin-display" readonly placeholder="------"
+                   autocomplete="off" aria-label="PIN, 6 digit">
+
+            <!-- Pesan error PIN salah -->
+            <p id="pin-error" aria-live="polite"></p>
+
+            <!-- Keyboard Virtual -->
+            <div id="virtual-keyboard" role="group" aria-label="Keypad angka">
+                <button class="key" type="button" data-key="1">1</button>
+                <button class="key" type="button" data-key="2">2</button>
+                <button class="key" type="button" data-key="3">3</button>
+                <button class="key" type="button" data-key="4">4</button>
+                <button class="key" type="button" data-key="5">5</button>
+                <button class="key" type="button" data-key="6">6</button>
+                <button class="key" type="button" data-key="7">7</button>
+                <button class="key" type="button" data-key="8">8</button>
+                <button class="key" type="button" data-key="9">9</button>
+                <button class="key key-action" type="button" data-action="clear">CLEAR</button>
+                <button class="key" type="button" data-key="0">0</button>
+                <button class="key key-ok" type="button" data-action="ok" id="key-ok">OK</button>
+            </div>
+
+            <!-- Hitung mundur saat keypad terkunci -->
+            <p id="lockout-timer" aria-live="assertive"></p>
+
+            <p id="desktop-hint">Ketik PIN menggunakan keyboard PC Anda.</p>
+        </div>
+    </div>
+
+    <!-- ============ ANIMASI SELAMAT DATANG (tanpa logo) ============ -->
+    <div id="welcome-overlay" aria-hidden="true">
+        <div class="welcome-inner">
+            <div class="welcome-ring" aria-hidden="true"></div>
+
+            <h1 class="welcome-title">Welcome to MetDrive</h1>
+
+            <p class="welcome-percent" id="welcome-percent" aria-hidden="true">0%</p>
+
+            <div class="progress-track" role="progressbar" aria-label="Memuat data"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-track">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= NAVBAR ================= -->
+    <header id="navbar">
+        <div class="nav-left">
+            <img src="logo-nav.png" alt="Logo MetDrive" class="nav-logo" width="38" height="38">
+            <span class="nav-brand">MetDrive</span>
+        </div>
+        <div class="nav-right">
+            <span id="net-status" class="net-pill checking" role="status" aria-live="polite">
+                <span class="net-dot" aria-hidden="true"></span>
+                <span id="net-label">Memeriksa...</span>
+            </span>
+            <span id="live-datetime">—</span>
+            <button type="button" id="lock-button" class="lock-button" title="Kunci kembali">
+                Kunci
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= HALAMAN DAFTAR FILE ================= -->
+    <main id="content-screen">
+        <h1>Welcome to MetDrive</h1>
+        <p class="subtitle">Berikut adalah daftar file Anda:</p>
+
+        <!-- Cari & urutkan -->
+        <div class="list-toolbar">
+            <div class="search-wrap">
+                <label class="sr-only" for="file-search">Cari nama file</label>
+                <input type="search" id="file-search" placeholder="Cari nama file..."
+                       autocomplete="off" spellcheck="false">
+                <button type="button" id="search-clear" class="search-clear"
+                        aria-label="Bersihkan pencarian" hidden>&times;</button>
+            </div>
+
+            <div class="select-wrap">
+                <label class="sr-only" for="file-sort">Urutkan file</label>
+                <select id="file-sort">
+                    <option value="newest">Terbaru</option>
+                    <option value="oldest">Terlama</option>
+                    <option value="name-asc">Nama A-Z</option>
+                    <option value="name-desc">Nama Z-A</option>
+                </select>
+            </div>
+        </div>
+
+        <p id="file-count" class="file-count" aria-live="polite"></p>
+
+        <div id="file-list" aria-busy="true">
+            <p class="loading">Memuat data...</p>
+        </div>
+
+        <p id="list-status" class="list-status" aria-live="polite"></p>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
