@@ -1,5 +1,5 @@
 /* =========================================================
-   METT GUDANG DATA — LOGIC
+   METDRIVE — LOGIC
    ========================================================= */
 
 // === PENGATURAN ===
@@ -53,6 +53,7 @@ const liveDatetime = document.getElementById("live-datetime");
 const netStatus = document.getElementById("net-status");
 const netLabel = document.getElementById("net-label");
 const lockButton = document.getElementById("lock-button");
+const refreshButton = document.getElementById("refresh-button");
 
 const contentScreen = document.getElementById("content-screen");
 const fileList = document.getElementById("file-list");
@@ -65,6 +66,7 @@ const listStatus = document.getElementById("list-status");
 // === STATE ===
 let currentInput = "";
 let isBusy = false;          // true saat proses submit / animasi berjalan
+let isRefreshing = false;    // true saat tombol muat ulang menarik data dari Drive
 let attempts = 0;
 let lockUntil = 0;
 let errorTimeout = null;
@@ -293,9 +295,14 @@ function lockApp() {
     clearInterval(clockInterval);
 
     isBusy = false;
+    isRefreshing = false;
     currentInput = "";
     allFiles = [];
     isTruncated = false;
+
+    // Normalkan tombol muat ulang, mis. user klik refresh lalu langsung Kunci
+    refreshButton.classList.remove("is-loading");
+    refreshButton.disabled = false;
 
     fileSearch.value = "";
     searchClear.hidden = true;
@@ -637,8 +644,35 @@ function renderFiles() {
 }
 
 // =========================================================
+// MUAT ULANG DATA (tanpa reload halaman)
+// =========================================================
+// Hanya menarik ulang daftar file dari Drive. Halaman sengaja tidak
+// di-reload, karena itu layar PIN tidak muncul lagi dan seluruh state
+// tampilan tetap: urutan sort, isi pencarian, jam, dan status koneksi.
+// Pintasan: tekan R, atau klik ikon di navbar.
+async function refreshFiles() {
+    if (isBusy || isRefreshing) return;
+
+    isRefreshing = true;
+    refreshButton.classList.add("is-loading");
+    refreshButton.disabled = true;
+
+    try {
+        // Daftar file dan status koneksi diambil bersamaan
+        await Promise.all([loadDriveFiles(), checkConnection()]);
+    } finally {
+        // Tombol selalu dinormalkan, walau request gagal
+        isRefreshing = false;
+        refreshButton.classList.remove("is-loading");
+        refreshButton.disabled = false;
+    }
+}
+
+// =========================================================
 // EVENT
 // =========================================================
+refreshButton.addEventListener("click", refreshFiles);
+
 virtualKeyboard.addEventListener("click", e => {
     const btn = e.target.closest("button");
     if (!btn || btn.disabled) return;
@@ -686,7 +720,7 @@ lockButton.addEventListener("click", () => {
 window.addEventListener("keydown", function (e) {
     const onPinScreen = pinScreen.style.display !== "none";
 
-    // Shortcut di halaman file: fokus search dengan "/", buka kunci dengan "l"
+    // Shortcut di halaman file: "/" fokus cari, "r" muat ulang, "l" kunci
     if (!onPinScreen) {
         const typing = e.target.matches("input, select, textarea");
 
@@ -699,6 +733,11 @@ window.addEventListener("keydown", function (e) {
 
         if ((e.key === "l" || e.key === "L") && !typing && !isBusy) {
             lockApp();
+            return;
+        }
+
+        if ((e.key === "r" || e.key === "R") && !typing && !isBusy) {
+            refreshFiles();
             return;
         }
 
