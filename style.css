@@ -1,5 +1,5 @@
 /* =========================================================
-   METT GUDANG DATA — STYLES
+   METDRIVE — STYLES
    Palette: #0691FF · #2D425C · #E2E1E2 · #F9FCFF
    ========================================================= */
 
@@ -312,6 +312,49 @@ body {
 .lock-button:active { transform: translateY(2px); }
 .lock-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 
+/* Tombol muat ulang: bulat, aksen biru saat hover */
+.refresh-button {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 18px;
+    color: var(--dark);
+    background: #fff;
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.refresh-button:hover:not(:disabled) {
+    color: var(--bg);
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.refresh-button:active:not(:disabled) { transform: translateY(2px); }
+.refresh-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+/* Tombol hanya nonaktif saat sedang memuat, jadi kursor "progress" lebih tepat */
+.refresh-button:disabled { opacity: .55; cursor: progress; }
+
+.refresh-icon { display: block; line-height: 1; }
+
+/* Ikon berputar selama request ke Drive berjalan.
+   Class "is-loading" (bukan "loading") supaya tidak bentrok dengan
+   .loading milik teks "Memuat data..." di daftar file. */
+@keyframes refreshSpin {
+    to { transform: rotate(360deg); }
+}
+
+.refresh-button.is-loading .refresh-icon {
+    animation: refreshSpin .8s linear infinite;
+}
+
 @keyframes dotPulse {
     0%, 100% { opacity: 1; }
     50%      { opacity: .35; }
@@ -324,12 +367,14 @@ body {
     .lock-button { font-size: 11px; padding: 6px 10px; }
     .nav-logo { width: 30px; height: 30px; }
     .nav-right { gap: 6px; }
+    .refresh-button { width: 28px; height: 28px; font-size: 16px; }
 }
 
 @media (max-width: 430px) {
     #net-label { display: none; }
     .net-pill { padding: 6px; }
     .lock-button { padding: 6px 9px; }
+    .refresh-button { width: 26px; height: 26px; font-size: 14px; }
 }
 
 /* =========================================================
